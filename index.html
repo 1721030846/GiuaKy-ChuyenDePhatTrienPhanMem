@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyMate</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">StudyMate</div>
+    <div class="topbar-right">
+      <span id="currentUserText" class="current-user hidden"></span>
+      <button id="logoutBtn" class="btn btn-light hidden">Đăng xuất</button>
+    </div>
+  </div>
+
+  <main class="app-shell">
+    <aside id="sidebar" class="sidebar hidden">
+      <div class="sidebar-title">Quản lý học tập</div>
+      <div class="sidebar-subtitle">Sản phẩm cá nhân giữa kỳ</div>
+
+      <nav class="menu">
+        <button class="menu-item active" data-view="dashboardView">Dashboard</button>
+        <button class="menu-item" data-view="subjectsView">Môn học</button>
+        <button class="menu-item" data-view="tasksView">Bài tập</button>
+        <button class="menu-item" data-view="statsView">Thống kê</button>
+      </nav>
+
+      <div class="sidebar-progress">
+        <div class="small-text">Tỷ lệ hoàn thành</div>
+        <div class="progress-value" id="sidebarProgress">0%</div>
+        <div class="small-text">Cập nhật theo dữ liệu hiện tại</div>
+      </div>
+    </aside>
+
+    <section class="content">
+
+      <!-- AUTH -->
+      <section id="authView" class="view active">
+        <div class="auth-wrap">
+          <div id="loginCard" class="auth-card">
+            <h1>Đăng nhập</h1>
+            <p class="muted">Truy cập hệ thống quản lý học tập cá nhân</p>
+
+            <form id="loginForm" class="form">
+              <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" placeholder="Nhập email" required />
+              </div>
+
+              <div class="form-group">
+                <label for="loginPassword">Mật khẩu</label>
+                <input type="password" id="loginPassword" placeholder="Nhập mật khẩu" required />
+              </div>
+
+              <button type="submit" class="btn btn-dark full">Đăng nhập</button>
+            </form>
+
+            <p class="switch-text">
+              Chưa có tài khoản?
+              <span id="goRegister">Đăng ký ngay</span>
+            </p>
+          </div>
+
+          <div id="registerCard" class="auth-card hidden">
+            <h1>Đăng ký</h1>
+            <p class="muted">Tạo tài khoản mới để bắt đầu sử dụng</p>
+
+            <form id="registerForm" class="form">
+              <div class="form-group">
+                <label for="registerName">Họ và tên</label>
+                <input type="text" id="registerName" placeholder="Nhập họ và tên" required />
+              </div>
+
+              <div class="form-group">
+                <label for="registerEmail">Email</label>
+                <input type="email" id="registerEmail" placeholder="Nhập email" required />
+              </div>
+
+              <div class="form-group">
+                <label for="registerPassword">Mật khẩu</label>
+                <input type="password" id="registerPassword" placeholder="Tạo mật khẩu" required />
+              </div>
+
+              <div class="form-group">
+                <label for="registerConfirm">Xác nhận mật khẩu</label>
+                <input type="password" id="registerConfirm" placeholder="Nhập lại mật khẩu" required />
+              </div>
+
+              <button type="submit" class="btn btn-dark full">Tạo tài khoản</button>
+            </form>
+
+            <p class="switch-text">
+              Đã có tài khoản?
+              <span id="goLogin">Quay lại đăng nhập</span>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- DASHBOARD -->
+      <section id="dashboardView" class="view">
+        <div class="hero card">
+          <div>
+            <div class="small-text" id="welcomeText">Xin chào 👋</div>
+            <h1>Bảng điều khiển học tập</h1>
+            <p class="muted">Theo dõi môn học, bài tập và deadline của bạn.</p>
+          </div>
+          <div class="hero-actions">
+            <button id="quickAddSubjectBtn" class="btn btn-light">+ Thêm môn học</button>
+            <button id="quickAddTaskBtn" class="btn btn-dark">+ Thêm bài tập</button>
+          </div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <h2>Danh sách bài tập gần nhất</h2>
+                <p class="muted">Một số bài tập mới hoặc sắp đến hạn</p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tiêu đề</th>
+                    <th>Môn học</th>
+                    <th>Deadline</th>
+                    <th>Ưu tiên</th>
+                    <th>Trạng thái</th>
+                  </tr>
+                </thead>
+                <tbody id="dashboardTaskTable"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card">
+              <h2>Môn học</h2>
+              <div id="subjectChipList" class="chip-list"></div>
+            </div>
+
+            <div class="card">
+              <h2>Deadline gần nhất</h2>
+              <div id="deadlineList" class="deadline-list"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SUBJECTS -->
+      <section id="subjectsView" class="view">
+        <div class="page-header card">
+          <div>
+            <div class="small-text">Quản lý dữ liệu</div>
+            <h1>Môn học</h1>
+            <p class="muted">Thêm, sửa, xóa môn học của bạn.</p>
+          </div>
+        </div>
+
+        <div class="subjects-layout">
+          <div class="card">
+            <h2 id="subjectFormTitle">Thêm môn học</h2>
+            <form id="subjectForm" class="form">
+              <input type="hidden" id="subjectId" />
+
+              <div class="form-group">
+                <label for="subjectName">Tên môn học</label>
+                <input type="text" id="subjectName" placeholder="Ví dụ: Lập trình Web" required />
+              </div>
+
+              <div class="form-group">
+                <label for="subjectColor">Màu hiển thị</label>
+                <select id="subjectColor">
+                  <option value="blue">Xanh dương</option>
+                  <option value="green">Xanh lá</option>
+                  <option value="orange">Cam</option>
+                  <option value="purple">Tím</option>
+                  <option value="red">Đỏ</option>
+                </select>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-dark">Lưu môn học</button>
+                <button type="button" id="cancelSubjectEdit" class="btn btn-light hidden">Hủy sửa</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="card">
+            <h2>Danh sách môn học</h2>
+            <div id="subjectList" class="item-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TASKS -->
+      <section id="tasksView" class="view">
+        <div class="page-header card">
+          <div>
+            <div class="small-text">Quản lý công việc học tập</div>
+            <h1>Bài tập</h1>
+            <p class="muted">Thêm, sửa, xóa và cập nhật trạng thái bài tập.</p>
+          </div>
+        </div>
+
+        <div class="tasks-layout">
+          <div class="card">
+            <h2 id="taskFormTitle">Thêm bài tập</h2>
+            <form id="taskForm" class="form">
+              <input type="hidden" id="taskId" />
+
+              <div class="task-form-grid">
+                <div class="form-group full-span">
+                  <label for="taskTitle">Tiêu đề bài tập</label>
+                  <input type="text" id="taskTitle" placeholder="Ví dụ: Thiết kế giao diện dashboard" required />
+                </div>
+
+                <div class="form-group">
+                  <label for="taskSubject">Môn học</label>
+                  <select id="taskSubject" required></select>
+                </div>
+
+                <div class="form-group">
+                  <label for="taskDeadline">Deadline</label>
+                  <input type="date" id="taskDeadline" required />
+                </div>
+
+                <div class="form-group">
+                  <label for="taskPriority">Ưu tiên</label>
+                  <select id="taskPriority">
+                    <option value="Cao">Cao</option>
+                    <option value="Trung bình">Trung bình</option>
+                    <option value="Thấp">Thấp</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="taskStatus">Trạng thái</label>
+                  <select id="taskStatus">
+                    <option value="Chưa làm">Chưa làm</option>
+                    <option value="Đang làm">Đang làm</option>
+                    <option value="Hoàn thành">Hoàn thành</option>
+                  </select>
+                </div>
+
+                <div class="form-group full-span">
+                  <label for="taskDescription">Mô tả</label>
+                  <textarea id="taskDescription" placeholder="Nhập mô tả bài tập"></textarea>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-dark">Lưu bài tập</button>
+                <button type="button" id="cancelTaskEdit" class="btn btn-light hidden">Hủy sửa</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="section-header">
+              <div>
+                <h2>Danh sách bài tập</h2>
+                <p class="muted">Tương tác trực tiếp với dữ liệu</p>
+              </div>
+
+              <div class="filter-row">
+                <input type="text" id="searchTask" placeholder="Tìm theo tiêu đề" />
+                <select id="filterStatus">
+                  <option value="">Tất cả trạng thái</option>
+                  <option value="Chưa làm">Chưa làm</option>
+                  <option value="Đang làm">Đang làm</option>
+                  <option value="Hoàn thành">Hoàn thành</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="taskList" class="item-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STATS -->
+      <section id="statsView" class="view">
+        <div class="page-header card">
+          <div>
+            <div class="small-text">Tổng hợp dữ liệu</div>
+            <h1>Thống kê</h1>
+            <p class="muted">Quan sát tiến độ hoàn thành theo môn học và toàn hệ thống.</p>
+          </div>
+        </div>
+
+        <div class="stats-grid" id="statsGridBottom"></div>
+
+        <div class="card">
+          <h2>Tiến độ theo môn học</h2>
+          <div id="barChart" class="chart-wrap"></div>
+        </div>
+      </section>
+
+    </section>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
