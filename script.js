@@ -48,6 +48,22 @@ function $(id) {
   return document.getElementById(id);
 }
 
+function getSafeColor(color) {
+  return color || 'blue';
+}
+
+function normalizeUserData(user) {
+  if (!user) return null;
+
+  user.subjects = (user.subjects || []).map(subject => ({
+    ...subject,
+    color: subject.color || 'blue'
+  }));
+
+  user.tasks = user.tasks || [];
+  return user;
+}
+
 function showToast(message) {
   const toast = $('toast');
   if (!toast) {
@@ -82,12 +98,16 @@ function clearCurrentUser() {
 function getCurrentUser() {
   const email = getCurrentUserEmail();
   if (!email) return null;
-  return readUsers().find(user => user.email === email) || null;
+
+  const user = readUsers().find(user => user.email === email) || null;
+  return normalizeUserData(user);
 }
 
 function updateCurrentUser(updatedUser) {
+  const normalizedUser = normalizeUserData(updatedUser);
+
   const users = readUsers().map(user =>
-    user.email === updatedUser.email ? updatedUser : user
+    user.email === normalizedUser.email ? normalizedUser : user
   );
   saveUsers(users);
 }
@@ -216,7 +236,9 @@ function renderSubjectChips() {
   if (!user || !target) return;
 
   target.innerHTML = user.subjects.length
-    ? user.subjects.map(subject => `<div class="chip ${subject.color}">${subject.name}</div>`).join('')
+    ? user.subjects
+        .map(subject => `<div class="chip ${getSafeColor(subject.color)}">${subject.name}</div>`)
+        .join('')
     : `<div>Chưa có môn học.</div>`;
 }
 
@@ -251,11 +273,13 @@ function renderSubjects() {
   target.innerHTML = user.subjects.length
     ? user.subjects.map(subject => {
         const count = user.tasks.filter(task => Number(task.subjectId) === Number(subject.id)).length;
+        const subjectColor = getSafeColor(subject.color);
+
         return `
           <div class="item-card">
             <div class="item-header">
               <div>
-                <div class="tag ${subject.color}">${subject.name}</div>
+                <div class="tag ${subjectColor}">${subject.name}</div>
                 <div class="small-text" style="margin-top:8px">${count} bài tập liên quan</div>
               </div>
             </div>
@@ -294,7 +318,7 @@ function renderTasks() {
               <div>
                 <h3>${task.title}</h3>
                 <div class="item-meta">
-                  <span class="tag ${subject ? subject.color : 'blue'}">${subject ? subject.name : 'Chưa chọn môn'}</span>
+                  <span class="tag ${subject ? getSafeColor(subject.color) : 'blue'}">${subject ? subject.name : 'Chưa chọn môn'}</span>
                   <span class="tag ${mapPriorityClass(task.priority)}">${task.priority}</span>
                   <span class="tag ${mapStatusClass(task.status)}">${task.status}</span>
                 </div>
@@ -515,7 +539,7 @@ function editSubject(id) {
 
   $('subjectId').value = subject.id;
   $('subjectName').value = subject.name;
-  $('subjectColor').value = subject.color;
+  $('subjectColor').value = getSafeColor(subject.color);
   $('subjectFormTitle').textContent = 'Sửa môn học';
   $('cancelSubjectEdit').classList.remove('hidden');
   showView('subjectsView');
@@ -524,6 +548,9 @@ function editSubject(id) {
 function deleteSubject(id) {
   const user = getCurrentUser();
   if (!user) return;
+
+  const confirmDelete = window.confirm('Bạn có chắc muốn xóa môn học này không?');
+  if (!confirmDelete) return;
 
   const hasTask = user.tasks.some(task => Number(task.subjectId) === Number(id));
   if (hasTask) {
@@ -600,6 +627,9 @@ function deleteTask(id) {
   const user = getCurrentUser();
   if (!user) return;
 
+  const confirmDelete = window.confirm('Bạn có chắc muốn xóa bài tập này không?');
+  if (!confirmDelete) return;
+
   user.tasks = user.tasks.filter(task => Number(task.id) !== Number(id));
   updateCurrentUser(user);
   resetTaskForm();
@@ -669,3 +699,7 @@ window.deleteTask = deleteTask;
 window.toggleTaskStatus = toggleTaskStatus;
 
 boot();
+
+window.addEventListener('load', () => {
+  $('loginEmail')?.focus();
+});
