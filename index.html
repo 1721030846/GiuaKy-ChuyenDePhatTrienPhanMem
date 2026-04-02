@@ -4,11 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>StudyMate</title>
+  <meta name="theme-color" content="#6366f1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="topbar">
-    <div class="brand">StudyMate</div>
+    <div class="brand"><span class="brand-mark">✦</span>StudyMate</div>
     <div class="topbar-right">
       <span id="currentUserText" class="current-user hidden"></span>
       <button id="logoutBtn" class="btn btn-light hidden">Đăng xuất</button>
@@ -39,6 +43,19 @@
       <!-- AUTH -->
       <section id="authView" class="view active">
         <div class="auth-wrap">
+
+        <div class="auth-showcase">
+          <div class="showcase-badge">Nền tảng học tập cá nhân</div>
+          <h2>Học tập gọn gàng hơn mỗi ngày</h2>
+          <p>Theo dõi môn học, deadline và tiến độ hoàn thành trong một giao diện dễ dùng và hiện đại.</p>
+          <div class="showcase-points">
+            <div class="showcase-point"><span>✓</span> Quản lý môn học trực quan</div>
+            <div class="showcase-point"><span>✓</span> Theo dõi deadline nhanh</div>
+            <div class="showcase-point"><span>✓</span> Thống kê tiến độ rõ ràng</div>
+          </div>
+          <div class="showcase-graphic" aria-hidden="true"></div>
+        </div>
+
           <div id="loginCard" class="auth-card">
             <h1>Đăng nhập</h1>
             <p class="muted">Truy cập hệ thống quản lý học tập cá nhân</p>
@@ -103,9 +120,21 @@
       <section id="dashboardView" class="view">
         <div class="hero card">
           <div>
-            <div class="small-text" id="welcomeText">Xin chào 👋</div>
+            <div class="small-text hero-kicker" id="welcomeText">Xin chào 👋</div>
             <h1>Bảng điều khiển học tập</h1>
             <p class="muted">Theo dõi môn học, bài tập và deadline của bạn.</p>
+          </div>
+          <div class="hero-side">
+            <div class="hero-summary">
+              <div class="hero-summary-item">
+                <strong>Tập trung</strong>
+                <span>Sắp xếp việc học rõ ràng</span>
+              </div>
+              <div class="hero-summary-item">
+                <strong>Tiến độ</strong>
+                <span>Theo dõi hoàn thành mỗi ngày</span>
+              </div>
+            </div>
           </div>
           <div class="hero-actions">
             <button id="quickAddSubjectBtn" class="btn btn-light">+ Thêm môn học</button>
@@ -182,6 +211,15 @@
                   <option value="orange">Cam</option>
                   <option value="purple">Tím</option>
                   <option value="red">Đỏ</option>
+                  <option value="teal">Xanh ngọc</option>
+                  <option value="pink">Hồng</option>
+                  <option value="indigo">Chàm</option>
+                  <option value="amber">Vàng hổ phách</option>
+                  <option value="cyan">Xanh cyan</option>
+                  <option value="lime">Xanh lime</option>
+                  <option value="rose">Hồng rose</option>
+                  <option value="sky">Xanh da trời</option>
+                  <option value="slate">Xám xanh</option>
                 </select>
               </div>
 
